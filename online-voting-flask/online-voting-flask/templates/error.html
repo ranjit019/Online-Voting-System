@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card center">
+  <h2 style="margin:0 0 8px 0">{{ title }}</h2>
+  <div class="muted">{{ message }}</div>
+  <div style="height:12px"></div>
+  <a class="btn" href="{{ url_for('index') }}">Go Home</a>
+</div>
+{% endblock %}

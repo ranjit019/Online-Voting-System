@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <div class="spaced">
+    <h2 style="margin:0">Ballot</h2>
+    <span class="pill">{{ 'Election Open' if election_open else 'Election Closed' }}</span>
+  </div>
+  <form method="post">
+    <div class="grid">
+      {% for p in positions %}
+      <div class="card">
+        <h3 style="margin:0 0 6px 0">{{ p.name }}</h3>
+        <div class="muted" style="margin-bottom:8px">{{ p.description or '' }}</div>
+        {% for c in p.candidates %}
+          <label class="flex">
+            <input type="radio" name="position_{{ p.id }}" value="{{ c.id }}"
+                   {% if my_votes.get(p.id) == c.id %}checked{% endif %}
+                   {% if not election_open %}disabled{% endif %}/>
+            <div>
+              <div>{{ c.name }}</div>
+              <div class="muted" style="font-size:.9rem">{{ c.manifesto }}</div>
+            </div>
+          </label>
+        {% else %}
+          <div class="muted">No candidates yet.</div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+    <div class="spaced" style="margin-top:12px">
+      <div class="muted">One selection per position. You can resubmit to change your selection.</div>
+      <button class="btn primary" type="submit" {% if not election_open %}disabled{% endif %}>Submit Selections</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

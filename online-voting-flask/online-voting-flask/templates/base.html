@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{{ site_title }} · Online Voting</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="container">
+    <header class="nav">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>{{ site_title }}</div>
+      </div>
+      <nav class="nav-links">
+        <a href="{{ url_for('index') }}">Home</a>
+        {% if current_user.is_authenticated %}
+          {% if current_user.role == 'voter' %}<a href="{{ url_for('vote') }}">Vote</a>{% endif %}
+          {% if current_user.role == 'admin' %}<a href="{{ url_for('admin_dashboard') }}">Admin</a>{% endif %}
+          <a class="btn" href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+          <a class="btn" href="{{ url_for('login') }}">Login</a>
+          <a class="btn primary" href="{{ url_for('register') }}">Sign Up</a>
+        {% endif %}
+        <a class="btn" href="{{ url_for('results') }}">Results</a>
+      </nav>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="grid">
+          {% for category, msg in messages %}
+            <div class="card">
+              <span class="pill">{{ category|title }}</span>
+              <div style="margin-top:8px">{{ msg }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+    <footer class="center">
+      <div class="muted">© {{ site_title }} Python Project</div>
+    </footer>
+  </div>
+</body>
+</html>

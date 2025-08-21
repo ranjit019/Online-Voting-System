@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid">
+  <div class="card">
+    <h2 style="margin:0 0 8px 0">Admin Dashboard</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="spaced">
+          <div>
+            <div class="muted">Users</div>
+            <div style="font-size:1.6rem">{{ total_users }}</div>
+          </div>
+          <div>
+            <div class="muted">Voters</div>
+            <div style="font-size:1.6rem">{{ total_voters }}</div>
+          </div>
+          <div>
+            <div class="muted">Votes Cast</div>
+            <div style="font-size:1.6rem">{{ votes_cast }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Settings</h3>
+        <form method="post" action="{{ url_for('admin_settings') }}">
+          <label>Site Title</label>
+          <input name="site_title" value="{{ site_title }}" />
+          <label class="flex"><input type="checkbox" name="election_open" {% if election_open %}checked{% endif %}/> Election Open</label>
+          <label class="flex"><input type="checkbox" name="show_results_public" {% if show_results_public %}checked{% endif %}/> Show Results Publicly</label>
+          <button class="btn success" type="submit">Save</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3>Add Position</h3>
+        <form method="post" action="{{ url_for('admin_position_new') }}">
+          <label>Name</label>
+          <input name="name" required/>
+          <label>Description</label>
+          <textarea name="description" rows="2"></textarea>
+          <button class="btn primary" type="submit">Create Position</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3>Add Candidate</h3>
+        <form method="post" action="{{ url_for('admin_candidate_new') }}">
+          <label>Name</label>
+          <input name="name" required/>
+          <label>Position</label>
+          <select name="position_id" required>
+            {% for p in positions %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}
+          </select>
+          <button class="btn primary" type="submit">Add Candidate</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Manage Positions</h3>
+    <div class="grid">
+      {% for p in positions %}
+      <div class="card">
+        <div class="spaced">
+          <div>
+            <div style="font-weight:600">{{ p.name }}</div>
+            <div class="muted">{{ p.description or '' }}</div>
+          </div>
+          <form method="post" action="{{ url_for('admin_position_delete', pid=p.id) }}" onsubmit="return confirm('Delete position and its candidates?')">
+            <button class="btn danger" type="submit">Delete</button>
+          </form>
+        </div>
+        <div style="height:10px"></div>
+        <table>
+          <thead><tr><th>Candidates</th><th class="right">Action</th></tr></thead>
+          <tbody>
+            {% for c in p.candidates %}
+            <tr>
+              <td>{{ c.name }} <span class="muted">— {{ c.manifesto }}</span></td>
+              <td class="right">
+                <form method="post" action="{{ url_for('admin_candidate_delete', cid=c.id) }}" onsubmit="return confirm('Remove candidate?')">
+                  <button class="btn danger" type="submit">Remove</button>
+                </form>
+              </td>
+            </tr>
+            {% else %}
+            <tr><td class="muted" colspan="2">No candidates</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="card"><div class="muted">No positions yet.</div></div>
+      {% endfor %}
+    </div>
+
+    <div style="height:12px"></div>
+    <form method="post" action="{{ url_for('admin_reset') }}" onsubmit="return confirm('This will delete ALL votes. Continue?')">
+      <button class="btn danger" type="submit">Reset Election (Delete Votes)</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

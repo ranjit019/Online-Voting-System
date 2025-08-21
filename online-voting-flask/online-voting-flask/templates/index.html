@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero card">
+  <h1 style="margin:0 0 8px 0">Welcome to {{ site_title }}</h1>
+  <p class="muted">Cast your vote for Future.</p>
+  <div style="height:12px"></div>
+  <div class="spaced">
+    <div class="flex" style="gap:12px">
+      <span class="pill">Election: {{ 'Open' if election_open else 'Closed' }}</span>
+      <span class="pill">Results: {{ 'Public' if show_results_public else 'Private' }}</span>
+    </div>
+    <div class="flex">
+      {% if current_user.is_authenticated %}
+        {% if current_user.role == 'voter' %}
+          <a class="btn primary" href="{{ url_for('vote') }}">Go Vote</a>
+        {% else %}
+          <a class="btn primary" href="{{ url_for('admin_dashboard') }}">Admin Panel</a>
+        {% endif %}
+      {% else %}
+        <a class="btn primary" href="{{ url_for('register') }}">Create Account</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<div style="height:16px"></div>
+<section class="grid">
+  {% for p in positions %}
+  <div class="card">
+    <h3>{{ p.name }}</h3>
+    <div class="muted">{{ p.description or 'No description' }}</div>
+  </div>
+  {% else %}
+  <div class="card">
+    <h3>No positions yet</h3>
+    <div class="muted">Admin can add positions and candidates from the dashboard.</div>
+  </div>
+  {% endfor %}
+</section>
+{% endblock %}
